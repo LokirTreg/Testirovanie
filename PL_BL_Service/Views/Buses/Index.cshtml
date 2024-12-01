@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Management</title>
+    
+</head>
+<body>
+
+    <div class="container">
+        <h1>Таблица "автобусы"</h1>
+
+        <div class="section">
+            <h2>Вывести все автобусы</h2>
+            <button onclick="getAllBuses()">Вывести все автобусы</button>
+            <pre id="getAllBusesResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Вывести автобус по Id</h2>
+            <input type="number" id="getBusId" placeholder="Id автобуса">
+            <button onclick="getBus()">Вывести автобус</button>
+            <pre id="getBusResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Добавить новый автобус</h2>
+            <textarea id="newBusJson" style="height:150px">{
+                "Manufacturer": "string",
+                "RegistrationSign": "string",
+                "Capacity": 0
+                }</textarea>
+            <br>
+            <button onclick="addBus()">Добавить автобус</button>
+            <pre id="addBusResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Обновить автобус по Id</h2>
+            <input type="number" id="updateBusId" placeholder="Id обновляемого автобуса">
+            <br>
+            <textarea id="updateBusJson" style="height:150px">{
+                "Manufacturer": "string",
+                "RegistrationSign": "string",
+                "Capacity": 0
+                }</textarea>
+            <br>
+            <button onclick="updateBus()">Обновить автобус</button>
+            <pre id="updateBusResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Удалить автобус по Id</h2>
+            <input type="number" id="deleteBusId" placeholder="Id удаляемого автобуса">
+            <button onclick="deleteBus()">Удалить автобус</button>
+            <pre id="deleteBusResult"></pre>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = 'https://localhost:7198/Buses';
+
+        // Функция для получения всех автобусов
+        async function getAllBuses() {
+            const response = await fetch(`${baseUrl}/GetAllBuses`);
+            const result = await response.json();
+            const buses = result; // Предположим, что получаем массив автобусов
+
+            // Создаем таблицу для отображения всех автобусов
+            const tableContainer = document.getElementById('getAllBusesResult');
+            let tableHTML = '<table>';
+
+            // Создаем заголовки таблицы
+            tableHTML += '<thead><tr><th>ID</th><th>Manufacturer</th><th>Registration Sign</th><th>Capacity</th></tr></thead>';
+
+            // Заполняем таблицу данными
+            tableHTML += '<tbody>';
+            buses.forEach(bus => {
+                tableHTML += `
+                            <tr>
+                                <td>${bus.id}</td>
+                                <td>${bus.manufacturer}</td>
+                                <td>${bus.registrationSign}</td>
+                                <td>${bus.capacity}</td>
+                            </tr>
+                        `;
+            });
+            tableHTML += '</tbody></table>';
+
+            // Вставляем таблицу на страницу
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // Функция для получения автобуса по Id
+        async function getBus() {
+            const id = document.getElementById('getBusId').value;
+            const response = await fetch(`${baseUrl}/GetBus/${id}`);
+            const result = await response.json();
+
+            const tableContainer = document.getElementById('getBusResult');
+
+            // Проверяем, что результат не пустой
+            if (result) {
+                let tableHTML = '<table>';
+
+                tableHTML += '<thead><tr><th>ID</th><th>Manufacturer</th><th>Registration Sign</th><th>Capacity</th></tr></thead>';
+                tableHTML += '<tbody>';
+
+                // Добавляем один ряд с данными автобуса
+                tableHTML += `
+                    <tr>
+                        <td>${result.id}</td>
+                        <td>${result.manufacturer}</td>
+                        <td>${result.registrationSign}</td>
+                        <td>${result.capacity}</td>
+                    </tr>
+                `;
+
+                tableHTML += '</tbody></table>';
+                tableContainer.innerHTML = tableHTML;
+            } else {
+                tableContainer.textContent = 'Автобус не найден';
+            }
+        }
+
+        // Функция для добавления нового автобуса
+        async function addBus() {
+            const busJson = document.getElementById('newBusJson').value;
+            const response = await fetch(`${baseUrl}/AddBus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: busJson
+            });
+            const result = await response.json();
+
+            // Проверка, если результат содержит manufacturer и id
+            document.getElementById('addBusResult').textContent = `Автобус ${result.manufacturer} вместимостью ${result.capacity} с регистрационным знаком ${result.registrationSign} добавлен.`;
+        }
+
+        // Функция для обновления существующего автобуса
+        async function updateBus() {
+            const id = document.getElementById('updateBusId').value;
+            const busJson = document.getElementById('updateBusJson').value;
+            const response = await fetch(`${baseUrl}/UpdateBus/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: busJson
+            });
+            const result = await response.json();
+
+            // Логируем информацию об обновлённом автобусе
+            document.getElementById('updateBusResult').textContent = `Автобус ${result.manufacturer} изменён.`;
+            
+        }
+
+        // Функция для удаления автобуса
+        async function deleteBus() {
+            const id = document.getElementById('deleteBusId').value;
+            const response = await fetch(`${baseUrl}/DeleteBus/${id}`, {
+                method: 'POST'
+            });
+
+            // Логируем информацию о удалённом автобусе
+            document.getElementById('deleteBusResult').textContent = `Автобус с Id = ${id} удалён.`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    width: 100%;
+    box-sizing: border-box; /* Убирает отступы, которые могут ограничивать размеры элементов */
+}
+
+/* Для всех блоков, чтобы они растягивались на всю ширину */
+h1, h2, button, input, textarea, pre {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+/* Стили для контейнера */
+.container {
+    max-width: 1200px;
+    margin: 0 auto; /* Центрирует содержимое */
+    padding: 20px;
+}
+
+/* Преобразуем блоки в гибкие элементы */
+.section {
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%; /* Убедимся, что текстовое поле занимает всю ширину */
+    height: 100px;
+}
+
+input {
+    width: 100%; /* Входные поля занимают всю ширину */
+}
+
+button {
+    width: 100%; /* Кнопки растягиваются на всю ширину */
+    margin-top: 10px;
+}
+
+pre {
+    white-space: pre-wrap; /* Чтобы длинные строки не выходили за пределы */
+    word-wrap: break-word;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+}

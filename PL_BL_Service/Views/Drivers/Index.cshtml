@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drivers Management</title>
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>Таблица "водители"</h1>
+
+        <div class="section">
+            <h2>Вывести всех водителей</h2>
+            <button onclick="getAllDrivers()">Вывести всех водителей</button>
+            <pre id="getAllDriversResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Вывести водителя по Id</h2>
+            <input type="number" id="getDriverId" placeholder="Id водителя">
+            <button onclick="getDriver()">Вывести водителя</button>
+            <pre id="getDriverResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Добавить нового водителя</h2>
+            <textarea id="newDriverJson" style="height:150px">{
+                "Name": "string",
+                "Age": 0,
+                "Experience": 0
+                }</textarea>
+            <br>
+            <button onclick="addDriver()">Добавить водителя</button>
+            <pre id="addDriverResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Обновить водителя по Id</h2>
+            <input type="number" id="updateDriverId" placeholder="Id обновляемого водителя">
+            <br>
+            <textarea id="updateDriverJson" style="height:150px">{
+                "Manufacturer": "string",
+                "Age": 0,
+                "Experience": 0
+                }</textarea>
+            <br>
+            <button onclick="updateDriver()">Обновить водителя</button>
+            <pre id="updateDriverResult"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Удалить водителя по Id</h2>
+            <input type="number" id="deleteDriverId" placeholder="Id удаляемого водителя">
+            <button onclick="deleteDriver()">Удалить водителя</button>
+            <pre id="deleteDriverResult"></pre>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = 'https://localhost:7198/Drivers';
+
+        // Функция для получения всех водителей
+        async function getAllDrivers() {
+            const response = await fetch(`${baseUrl}/GetAllDrivers`);
+            const result = await response.json();
+            const drivers = result; // Предположим, что получаем массив водителей
+
+            // Создаем таблицу для отображения всех водителей
+            const tableContainer = document.getElementById('getAllDriversResult');
+            let tableHTML = '<table>';
+
+            // Создаем заголовки таблицы
+            tableHTML += '<thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Experience</th></tr></thead>';
+
+            // Заполняем таблицу данными
+            tableHTML += '<tbody>';
+            drivers.forEach(driver => {
+                tableHTML += `
+                            <tr>
+                                <td>${driver.id}</td>
+                                <td>${driver.name}</td>
+                                <td>${driver.age}</td>
+                                <td>${driver.experience}</td>
+                            </tr>
+                        `;
+            });
+            tableHTML += '</tbody></table>';
+
+            // Вставляем таблицу на страницу
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // Функция для получения водителя по Id
+        async function getDriver() {
+            const id = document.getElementById('getDriverId').value;
+            const response = await fetch(`${baseUrl}/GetDriver/${id}`);
+            const result = await response.json();
+
+            const tableContainer = document.getElementById('getDriverResult');
+
+            // Проверяем, что результат не пустой
+            if (result) {
+                let tableHTML = '<table>';
+
+                tableHTML += '<thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Experience</th></tr></thead>';
+                tableHTML += '<tbody>';
+
+                // Добавляем один ряд с данными водителя
+                tableHTML += `
+                    <tr>
+                        <td>${result.id}</td>
+                        <td>${result.name}</td>
+                        <td>${result.age}</td>
+                        <td>${result.experience}</td>
+                    </tr>
+                `;
+
+                tableHTML += '</tbody></table>';
+                tableContainer.innerHTML = tableHTML;
+            } else {
+                tableContainer.textContent = 'Водитель не найден';
+            }
+        }
+
+        // Функция для добавления нового водителя
+        async function addDriver() {
+            const driverJson = document.getElementById('newDriverJson').value;
+            const response = await fetch(`${baseUrl}/AddDriver`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: driverJson
+            });
+            const result = await response.json();
+
+            document.getElementById('addDriverResult').textContent = `Водитель ${result.name} добавлен.`;
+        }
+
+        // Функция для обновления существующего водителя
+        async function updateDriver() {
+            const id = document.getElementById('updateDriverId').value;
+            const driverJson = document.getElementById('updateDriverJson').value;
+            const response = await fetch(`${baseUrl}/UpdateDriver/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: driverJson
+            });
+            const result = await response.json();
+
+            document.getElementById('updateDriverResult').textContent = `Водитель ${result.name} обновлён.`;
+        }
+
+        // Функция для удаления водителя
+        async function deleteDriver() {
+            const id = document.getElementById('deleteDriverId').value;
+            const response = await fetch(`${baseUrl}/DeleteDriver/${id}`, {
+                method: 'POST'
+            });
+
+            // Логируем информацию о удалённом водителе
+            document.getElementById('deleteDriverResult').textContent = `Водитель с Id = ${id} удалён.`;
+        }
+    </script>
+</body>
+</html>
