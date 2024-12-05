@@ -5,13 +5,13 @@ using System.Text;
 
 public class RabbitMQService
 {
-    private readonly string _hostName = "localhost"; // Адрес RabbitMQ
-    private readonly string _queueName = "busQueue"; // Название очереди
-    private readonly string _userName = "guest";     // Имя пользователя RabbitMQ
-    private readonly string _password = "guest";     // Пароль пользователя RabbitMQ
+    private readonly string _hostName = "localhost"; 
+    private readonly string _queueName = "Queue"; 
+    private readonly string _userName = "guest"; 
+    private readonly string _password = "guest";  
 
-    private IConnection _connection; // Соединение с RabbitMQ
-    private IModel _channel;         // Канал для общения с RabbitMQ
+    private IConnection _connection;
+    private IModel _channel;       
 
     public RabbitMQService()
     {

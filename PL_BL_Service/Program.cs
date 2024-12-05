@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<RabbitMqClientService>();
-builder.Services.AddTransient<IBusinessService, BusinessService>();
+builder.Services.AddTransient<IUserBL, UserBL>();
 
 var app = builder.Build();
 

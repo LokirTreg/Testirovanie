@@ -1,0 +1,179 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Таблица "пользователи"</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Вывести всех пользователей</h2>
+            <button class="btn btn-primary" onclick="getAllUsers()">Вывести всех пользователей</button>
+            <div class="mt-3">
+                <pre id="getAllUsersResult"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Вывести пользователя по Id</h2>
+            <div class="input-group mb-3">
+                <input type="number" id="getUserId" class="form-control" placeholder="ID пользователя">
+                <button class="btn btn-primary" onclick="getUser()">Вывести пользователя</button>
+            </div>
+            <div>
+                <pre id="getUserResult"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Добавить нового пользователя</h2>
+            <div class="mb-3">
+                <input type="text" id="newUsername" class="form-control" placeholder="Имя пользователя">
+            </div>
+            <div class="mb-3">
+                <input type="email" id="newEmail" class="form-control" placeholder="Email">
+            </div>
+            <div class="mb-3">
+                <input type="password" id="newPasswordHash" class="form-control" placeholder="Хэш пароля">
+            </div>
+            <button class="btn btn-success" onclick="addUser()">Добавить пользователя</button>
+            <div class="mt-3">
+                <pre id="addUserResult"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Обновить пользователя по Id</h2>
+            <div class="mb-3">
+                <input type="number" id="updateUserId" class="form-control" placeholder="ID обновляемого пользователя">
+            </div>
+            <div class="mb-3">
+                <input type="text" id="updateUsername" class="form-control" placeholder="Имя пользователя">
+            </div>
+            <div class="mb-3">
+                <input type="email" id="updateEmail" class="form-control" placeholder="Email">
+            </div>
+            <div class="mb-3">
+                <input type="password" id="updatePasswordHash" class="form-control" placeholder="Хэш пароля">
+            </div>
+            <button class="btn btn-warning" onclick="updateUser()">Обновить пользователя</button>
+            <div class="mt-3">
+                <pre id="updateUserResult"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Удалить пользователя по Id</h2>
+            <div class="input-group mb-3">
+                <input type="number" id="deleteUserId" class="form-control" placeholder="ID удаляемого пользователя">
+                <button class="btn btn-danger" onclick="deleteUser()">Удалить пользователя</button>
+            </div>
+            <div>
+                <pre id="deleteUserResult"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+<script>
+    const baseUrl = 'https://localhost:7198/Users';
+
+    // Функция для получения всех пользователей
+    async function getAllUsers() {
+        const response = await fetch(`${baseUrl}/GetAllUsers`);
+        const users = await response.json();
+
+        const tableContainer = document.getElementById('getAllUsersResult');
+        let tableHTML = '<table>';
+        tableHTML += '<thead><tr><th>ID</th><th>Имя пользователя</th><th>Email</th><th>Хэш пароля</th></tr></thead>';
+        tableHTML += '<tbody>';
+        users.forEach(user => {
+            tableHTML += `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.passwordHash}</td>
+                </tr>
+            `;
+        });
+        tableHTML += '</tbody></table>';
+        tableContainer.innerHTML = tableHTML;
+    }
+
+    // Функция для получения пользователя по Id
+    async function getUser() {
+        const id = document.getElementById('getUserId').value;
+        const response = await fetch(`${baseUrl}/GetUser/${id}`);
+        const user = await response.json();
+
+        const tableContainer = document.getElementById('getUserResult');
+        if (user) {
+            let tableHTML = '<table>';
+            tableHTML += '<thead><tr><th>ID</th><th>Имя пользователя</th><th>Email</th><th>Хэш пароля</th></tr></thead>';
+            tableHTML += `<tbody>
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.passwordHash}</td>
+                </tr>
+            </tbody></table>`;
+            tableContainer.innerHTML = tableHTML;
+        } else {
+            tableContainer.textContent = 'Пользователь не найден';
+        }
+    }
+
+    // Функция для добавления нового пользователя
+    async function addUser() {
+        const username = document.getElementById('newUsername').value;
+        const email = document.getElementById('newEmail').value;
+        const passwordHash = document.getElementById('newPasswordHash').value;
+
+        const response = await fetch(`${baseUrl}/AddUser`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, passwordHash })
+        });
+
+        const result = await response.json();
+        document.getElementById('addUserResult').textContent = `Пользователь №${result.id} добавлен.`;
+    }
+
+    // Функция для обновления существующего пользователя
+    async function updateUser() {
+        const id = document.getElementById('updateUserId').value;
+        
+        const username = document.getElementById('updateUsername').value;
+        const email = document.getElementById('updateEmail').value;
+        const passwordHash = document.getElementById('updatePasswordHash').value;
+
+        const response = await fetch(`${baseUrl}/UpdateUser/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, passwordHash })
+        });
+
+        const result = await response.json();
+        document.getElementById('updateUserResult').textContent = `Пользователь №${id} обновлён.`;
+    }
+
+    // Функция для удаления пользователя
+    async function deleteUser() {
+        const id = document.getElementById('deleteUserId').value;
+        await fetch(`${baseUrl}/DeleteUser/${id}`, { method: 'POST' });
+        document.getElementById('deleteUserResult').textContent = `Пользователь №${id} удалён.`;
+    }
+</script>
+}
